@@ -1,0 +1,11 @@
+mutation LoginUser($usernameOrEmail: String!, $password: String!) {
+  loginUser(usernameOrEmail: $usernameOrEmail, password: $password) {
+    errors {
+      field
+      message
+    }
+    callback {
+      ...UserFragment
+    }
+  }
+}

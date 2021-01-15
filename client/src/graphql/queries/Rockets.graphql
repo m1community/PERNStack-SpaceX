@@ -1,0 +1,16 @@
+query Rockets {
+  rockets {
+    id
+    rocket_name
+    rocket_type
+    first_flight
+    wikipedia
+    description
+    active
+    company
+    country
+    cost_per_launch
+    success_rate_pct
+    flickr_images
+  }
+}

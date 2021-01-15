@@ -1,0 +1,5 @@
+query NextLaunch {
+  nextLaunch: launches(range: next) {
+    ...LaunchFragment
+  }
+}

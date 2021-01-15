@@ -1,0 +1,12 @@
+query HistoricalEvents {
+  history(order: desc) {
+    id
+    title
+    details
+    event_date_unix
+    event_date_utc
+    links {
+      article
+    }
+  }
+}

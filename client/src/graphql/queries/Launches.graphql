@@ -1,0 +1,5 @@
+query Launches($limit: Int!, $offset: Int!) {
+  launches(order: desc, limit: $limit, offset: $offset) {
+    ...LaunchFragment
+  }
+}
