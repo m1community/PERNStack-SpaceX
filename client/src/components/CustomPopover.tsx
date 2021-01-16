@@ -1,9 +1,10 @@
-import { Box, Text, Button, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverFooter, PopoverHeader, PopoverProps, PopoverTrigger, Portal, Input } from "@chakra-ui/react"
-import React, { useRef, useState } from "react"
+import { Box, Text, Button, Popover, PopoverBody, PopoverCloseButton, PopoverContent, PopoverFooter, PopoverHeader, PopoverProps, PopoverTrigger, Portal } from "@chakra-ui/react"
+import React from "react"
 import { User } from "../generated/graphql"
 import dayjs from "dayjs"
 import { Form, Formik } from "formik"
 import { CustomInput } from "./CustomInput"
+import { Upload } from "./Upload"
 
 interface DataProps {
     user: User
@@ -12,8 +13,6 @@ interface DataProps {
 export const CustomPopover: React.FC<PopoverProps & DataProps> = ({children, user }) => {
 
     const createdAt = dayjs(parseInt(user.created_at))
-
-
     return (
         <Popover isLazy closeOnBlur={false} placement="bottom" >
             {({onClose}) => {
@@ -32,6 +31,7 @@ export const CustomPopover: React.FC<PopoverProps & DataProps> = ({children, use
                                 <PopoverCloseButton />
                                 <PopoverBody>
                                 <Box>
+                                    <Upload />
                                     <Formik
                                         initialValues={{first_name: user.first_name, last_name: user.last_name}}
                                         onSubmit={(values) => {

@@ -5,10 +5,12 @@ import argon2 from "argon2"
 import { FieldErrors } from "../errors/FieldErrors";
 import { COOKIE_NAME } from "../utils/constants";
 import { UserValidatorSchema } from '../utils/UserValidatorSchema'
-import { ValidationError, GraphQLUpload } from "apollo-server-express";
-import { UserResponse, UserInput, Upload } from "../utils/types";
-import { createWriteStream } from "fs";
-// import { GraphQLUpload } from "graphql-upload"
+import { ValidationError } from "apollo-server-express";
+import { UserResponse, UserInput } from "../utils/types";
+import fs from "fs";
+import { FileUpload, GraphQLUpload } from "graphql-upload"
+import path from "path";
+
 
 @Resolver(User)
 export class UserResolver {
@@ -32,7 +34,7 @@ export class UserResolver {
         //@ts-ignore
         const id = req.session.userId
         if(!id) return null
-
+        console.log(id)
         return await User.findOne(id)
     }
 
@@ -161,14 +163,36 @@ export class UserResolver {
         }
     }
 
+    private file: string = ""
 
     @Mutation(() => Boolean)
     async addAvatar(
-        @Arg("picture", () => GraphQLUpload!) {file_name, createReadStream}: Upload
-    ): Promise<boolean> {
-        return new Promise((res, rej) => {
-            createReadStream()
-                .pipe(createWriteStream(__dirname + `/images`))
+        @Arg("file", () => GraphQLUpload) {createReadStream, filename}: FileUpload,
+        @Ctx() {req}: SpacexContext
+    ): Promise<Boolean> {
+       
+        //@ts-ignore
+        const imageName = `user_${req.session.userId}_${filename}` 
+        const pathName = path.join(__dirname, `../../images/${imageName}`)
+        
+        
+        console.log(req.session.userId)
+
+        return new Promise((resolve, reject) => {
+            if(!req.session.userId) return resolve(false)
+            createReadStream().pipe(fs.createWriteStream(pathName))
+                .on("finish", () => {
+                    this.file = imageName
+                    console.log(pathName)
+                    resolve(true)
+                })
+                .on("error",() => reject(false))
         })
     }
+
+    @Query(() => String)
+    getAvatar(): string {
+        return this.file
+    }
 }
+

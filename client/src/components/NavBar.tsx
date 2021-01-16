@@ -1,6 +1,6 @@
 import { CloseIcon, HamburgerIcon, MoonIcon, SettingsIcon } from "@chakra-ui/icons"
 import { Button, Flex, FlexProps, Heading, IconButton, useColorMode, Link, HStack, Avatar, Box, useDisclosure, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, Drawer, DrawerBody, Center, Divider } from "@chakra-ui/react"
-import React from "react"
+import React, { useState } from "react"
 import { bgColor, color } from "../utils/colors"
 import NextLink from "next/link"
 import { SearchInput } from "./SearchInput"
@@ -9,7 +9,7 @@ import { SettingsMenu } from "./SettingsMenu"
 import { CustomPopover } from "./CustomPopover"
 import { MainMenuList } from "./MainMenuList"
 import { useAuth } from "../hooks/useAuth"
-import { useLogoutMutation } from "../generated/graphql"
+import { useGetAvatarQuery, useLogoutMutation } from "../generated/graphql"
 import { useApolloClient } from "@apollo/client"
 
 export const NavBar: React.FC<FlexProps> = () => {
@@ -20,6 +20,16 @@ export const NavBar: React.FC<FlexProps> = () => {
     const apolloClient = useApolloClient()
     const {colorMode, toggleColorMode} = useColorMode()
     const {isOpen, onOpen, onClose} = useDisclosure()
+    
+    const [avatar, setAvatar] = useState("")
+
+    const {} = useGetAvatarQuery({
+        onCompleted: (data) => {
+            console.log("avatar", data.getAvatar)
+
+            setAvatar(data.getAvatar)
+        }
+    })
 
     
     return ( 
@@ -64,7 +74,7 @@ export const NavBar: React.FC<FlexProps> = () => {
                             {!userLoading && isMe ?
                                 <Box d={["none", "none", "flex", "flex"]}>
                                     <CustomPopover user={isMe} >               
-                                        <Avatar _hover={{cursor: "pointer"}} size="sm" src="" mt={1} mx={4} name={isMe.first_name + isMe.last_name} />
+                                        <Avatar _hover={{cursor: "pointer"}} size="sm" src={`http://localhost:4000/images/${avatar}`} mt={1} mx={4} name={isMe.first_name + isMe.last_name} />
                                     </CustomPopover>       
                                     <HStack>
                                         <SettingsMenu>

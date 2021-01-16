@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { LaunchesQuery } from '../generated/graphql';
 import { sleep } from '../utils/sleep';
 import { createUploadLink } from 'apollo-upload-client'
+import { onError } from 'apollo-link-error';
 
 function MyApp({ Component, pageProps }: AppProps) {
 
@@ -24,6 +25,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     uri: "https://spacexdata.herokuapp.com/graphql",
 
   })
+
+  const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log('graphQLErrors', graphQLErrors);
+  }
+  if (networkError) {
+    console.log('networkError', networkError);
+  }
+  });
 
   const uploadLink = createUploadLink({ uri: "http://localhost:4000/graphql" })
 
@@ -58,7 +68,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       setClient(
         new ApolloClient({
           //@ts-ignore
-          link: ApolloLink.from([backEndLink, spaceXAPI, uploadLink]),
+          link: ApolloLink.from([uploadLink, errorLink, backEndLink, spaceXAPI]),
           cache,
           ssrMode: typeof window === undefined
         })

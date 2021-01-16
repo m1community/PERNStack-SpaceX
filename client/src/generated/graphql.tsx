@@ -24,6 +24,7 @@ export type Query = {
   cores?: Maybe<Array<Maybe<Core>>>;
   dragon?: Maybe<Dragon>;
   dragons?: Maybe<Array<Maybe<Dragon>>>;
+  getAvatar: Scalars['String'];
   history?: Maybe<Array<Maybe<History>>>;
   info?: Maybe<Info>;
   landingpad?: Maybe<Landingpad>;
@@ -200,6 +201,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   registerUser: UserResponse;
   loginUser: UserResponse;
+  addAvatar: Scalars['Boolean'];
 };
 
 
@@ -216,6 +218,11 @@ export type MutationRegisterUserArgs = {
 export type MutationLoginUserArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationAddAvatarArgs = {
+  file: Scalars['Upload'];
 };
 
 export type UserResponse = {
@@ -235,6 +242,7 @@ export type UserInput = {
   email: Scalars['String'];
   password: Scalars['String'];
 };
+
 
 export enum CapsuleRange {
   Past = 'past',
@@ -796,7 +804,6 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
-
 export type LaunchFragmentFragment = (
   { __typename?: 'Launch' }
   & Pick<Launch, 'details' | 'is_tentative' | 'flight_number' | 'mission_name' | 'launch_success' | 'launch_date_utc' | 'upcoming'>
@@ -809,6 +816,16 @@ export type LaunchFragmentFragment = (
 export type UserFragmentFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'username' | 'email' | 'first_name' | 'last_name' | 'created_at' | 'updated_at'>
+);
+
+export type AddAvatarMutationVariables = Exact<{
+  file: Scalars['Upload'];
+}>;
+
+
+export type AddAvatarMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'addAvatar'>
 );
 
 export type LoginUserMutationVariables = Exact<{
@@ -856,6 +873,14 @@ export type RegisterUserMutation = (
       & UserFragmentFragment
     )> }
   ) }
+);
+
+export type GetAvatarQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAvatarQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'getAvatar'>
 );
 
 export type HistoricalEventsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -956,6 +981,36 @@ export const UserFragmentFragmentDoc = gql`
   updated_at
 }
     `;
+export const AddAvatarDocument = gql`
+    mutation AddAvatar($file: Upload!) {
+  addAvatar(file: $file)
+}
+    `;
+export type AddAvatarMutationFn = Apollo.MutationFunction<AddAvatarMutation, AddAvatarMutationVariables>;
+
+/**
+ * __useAddAvatarMutation__
+ *
+ * To run a mutation, you first call `useAddAvatarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddAvatarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addAvatarMutation, { data, loading, error }] = useAddAvatarMutation({
+ *   variables: {
+ *      file: // value for 'file'
+ *   },
+ * });
+ */
+export function useAddAvatarMutation(baseOptions?: Apollo.MutationHookOptions<AddAvatarMutation, AddAvatarMutationVariables>) {
+        return Apollo.useMutation<AddAvatarMutation, AddAvatarMutationVariables>(AddAvatarDocument, baseOptions);
+      }
+export type AddAvatarMutationHookResult = ReturnType<typeof useAddAvatarMutation>;
+export type AddAvatarMutationResult = Apollo.MutationResult<AddAvatarMutation>;
+export type AddAvatarMutationOptions = Apollo.BaseMutationOptions<AddAvatarMutation, AddAvatarMutationVariables>;
 export const LoginUserDocument = gql`
     mutation LoginUser($usernameOrEmail: String!, $password: String!) {
   loginUser(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -1062,6 +1117,36 @@ export function useRegisterUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type RegisterUserMutationHookResult = ReturnType<typeof useRegisterUserMutation>;
 export type RegisterUserMutationResult = Apollo.MutationResult<RegisterUserMutation>;
 export type RegisterUserMutationOptions = Apollo.BaseMutationOptions<RegisterUserMutation, RegisterUserMutationVariables>;
+export const GetAvatarDocument = gql`
+    query GetAvatar {
+  getAvatar
+}
+    `;
+
+/**
+ * __useGetAvatarQuery__
+ *
+ * To run a query within a React component, call `useGetAvatarQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAvatarQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAvatarQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAvatarQuery(baseOptions?: Apollo.QueryHookOptions<GetAvatarQuery, GetAvatarQueryVariables>) {
+        return Apollo.useQuery<GetAvatarQuery, GetAvatarQueryVariables>(GetAvatarDocument, baseOptions);
+      }
+export function useGetAvatarLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAvatarQuery, GetAvatarQueryVariables>) {
+          return Apollo.useLazyQuery<GetAvatarQuery, GetAvatarQueryVariables>(GetAvatarDocument, baseOptions);
+        }
+export type GetAvatarQueryHookResult = ReturnType<typeof useGetAvatarQuery>;
+export type GetAvatarLazyQueryHookResult = ReturnType<typeof useGetAvatarLazyQuery>;
+export type GetAvatarQueryResult = Apollo.QueryResult<GetAvatarQuery, GetAvatarQueryVariables>;
 export const HistoricalEventsDocument = gql`
     query HistoricalEvents {
   history(order: desc) {

@@ -11,7 +11,10 @@ import Redis from "ioredis"
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 import { COOKIE_NAME, PROD } from "./utils/constants"
+import { graphqlUploadExpress } from "graphql-upload"
 import path from "path"
+
+
 const main = async() => {
 
     const app = express()
@@ -19,7 +22,7 @@ const main = async() => {
     const RedisStore = connectRedis(session)
     const redisClient = new Redis()
 
-    console.log("dirname: ", path.join(__dirname, ""))
+  
 
     const conn = await createConnection({
         type: "postgres",
@@ -35,6 +38,10 @@ const main = async() => {
     })
 
     // await User.delete({})
+
+    app.use(
+        graphqlUploadExpress({maxFieldSize: 100000, maxFiles: 20})
+    )
 
     app.use(
         cors({
@@ -62,6 +69,7 @@ const main = async() => {
             resave: false
         })
     )
+
    
 
     const apolloServer = new ApolloServer({
@@ -72,9 +80,11 @@ const main = async() => {
         context: ({req, res}: SpacexContext) => ({
             req,
             res
-        })
-        
+        }),
+        uploads: false
     })
+
+    app.use("/images", express.static(path.join(__dirname, '../images')))
 
     apolloServer.applyMiddleware({
         app,
@@ -84,9 +94,14 @@ const main = async() => {
     app.get("/", (_, res) => {
         res.send("Hello server")
     })
+
     app.listen(PORT, () => {
-        console.log(`Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`)
+        console.log(`http://localhost:${PORT}`)
     })
+
+    // app.listen(PORT, () => {
+    //     console.log(`Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}/`)
+    // })
 }
 
 main().catch(e => console.log(e))

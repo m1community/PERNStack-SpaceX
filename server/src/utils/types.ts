@@ -1,7 +1,7 @@
 import { User } from "../entities/User"
 import { FieldErrors } from "../errors/FieldErrors"
 import { InputType, Field, ObjectType } from "type-graphql"
-import { Stream } from "stream"
+import { ReadStream } from "tty"
 
 @InputType()
 export class UserInput {
@@ -26,8 +26,16 @@ export class UserResponse {
 }
 
 export interface Upload {
-    file_name: string
-    mimetype: string,
-    encoding: string,
-    createReadStream: () => Stream
+    file_name: string;
+    mimetype: string;
+    encoding: string;
+    createReadStream: () => ReadStream; 
+}
+
+
+
+@ObjectType()
+export class File {
+    @Field()
+    url: string
 }
